@@ -33,11 +33,11 @@ namespace :deploy do
       unless version_increase == 'none'
         info "current version tag #{old_version}"
         if version_increase == 'major'
-          GVB.tag_version "#{GVB.major_version + 1}.0.0"
+          GVB.tag_version "#{GVB.major_version(true) + 1}.0.0"
         elsif version_increase == 'minor'
-          GVB.tag_version "#{GVB.major_version}.#{GVB.minor_version+1}.0"
+          GVB.tag_version "#{GVB.major_version(true)}.#{GVB.minor_version(true)+1}.0"
         elsif version_increase == 'patch'
-          GVB.tag_version "#{GVB.major_version}.#{GVB.minor_version}.#{GVB.patch_version+1}"
+          GVB.tag_version "#{GVB.major_version(true)}.#{GVB.minor_version(true)}.#{GVB.patch_version(true)+1}"
         end
 
         info "version tag bumped to #{GVB.version(true)}"
@@ -46,10 +46,13 @@ namespace :deploy do
       unless git_working_directory == :working_directory_not_set
         git_mgr = Services::SourceManagers::GitManager.new(git_working_directory)
         new_version = GVB.version(true)
-        info "getting commits between #{old_version} and #{new_version}"
-        commits = git_mgr.get_commits(old_version, new_version)
-        story_ids = git_mgr.get_story_ids(commits)
-        info "story ids found for this release #{story_ids.length} stories"
+        if new_version == old_version
+          info "getting commits between #{old_version} and #{new_version}"
+          commits = git_mgr.get_commits(old_version, new_version)
+          story_ids = git_mgr.get_story_ids(commits)
+          info "story ids found for this release #{story_ids.length} stories"
+        end
+
       end
 
       jira_site_url = fetch(:jira_site_url)
