@@ -76,16 +76,14 @@ namespace :deploy do
         info output
         info "****** END RELEASE NOTES *********"
 
-        publisher_api_token = fetch(:publisher_api_token)
-        unless publisher_api_token == :publisher_api_token_not_set
+      end
 
-          pub = Services::Publishers::HipChatPublisher.new(publisher_api_token)
-          env_to_deploy = fetch(:env_to_deploy)
-          pub.publish_release(new_version, fetch(:publisher_system_name),env_to_deploy,output,fetch(:publisher_chat_room))
+      publisher_api_token = fetch(:publisher_api_token)
+      unless publisher_api_token == :publisher_api_token_not_set
 
-
-        end
-
+        pub = Services::Publishers::HipChatPublisher.new(publisher_api_token)
+        env_to_deploy = fetch(:env_to_deploy)
+        pub.publish_release(new_version, fetch(:publisher_system_name),env_to_deploy,output,fetch(:publisher_chat_room))
 
       end
 
