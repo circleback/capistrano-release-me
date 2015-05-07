@@ -16,6 +16,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'git', '~> 1.2.9.1'
   s.add_dependency 'jira-ruby', '~> 0.1.14'
   s.add_dependency 'git-version-bump', '~> 0.14.0'
+  s.add_dependency 'hipchat', '~> 1.5'
   s.add_development_dependency 'rake'
   s.add_development_dependency 'rspec', '~> 3.0.0'
   s.require_path = 'lib'
