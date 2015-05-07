@@ -27,7 +27,7 @@ namespace :deploy do
       git_working_directory = fetch(:git_working_directory)
       version_increase = fetch(:version_increase)
 
-      old_version = GVB.version(true)
+      old_version = "v#{GVB.major_version(true)}.#{GVB.minor_version(true)}.#{GVB.patch_version(true)}"
       story_ids = []
 
       unless version_increase == 'none'
@@ -45,8 +45,8 @@ namespace :deploy do
 
       unless git_working_directory == :working_directory_not_set
         git_mgr = Services::SourceManagers::GitManager.new(git_working_directory)
-        new_version = GVB.version(true)
-        if new_version == old_version
+        new_version = "v#{GVB.major_version(true)}.#{GVB.minor_version(true)}.#{GVB.patch_version(true)}"
+        unless new_version == old_version
           info "getting commits between #{old_version} and #{new_version}"
           commits = git_mgr.get_commits(old_version, new_version)
           story_ids = git_mgr.get_story_ids(commits)
