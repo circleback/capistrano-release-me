@@ -31,18 +31,25 @@ namespace :deploy do
       story_ids = []
 
       unless version_increase == 'none'
-        puts "current version tag #{old_version}"
-        execute :rake, "version:bump:#{version_increase}"
-        puts "version tag bumped to #{GVB.version}"
+        info "current version tag #{old_version}"
+        if version_increase == 'major'
+          GVB.tag_version "#{GVB.major_version + 1}.0.0"
+        elsif version_increase == 'minor'
+          GVB.tag_version "#{GVB.major_version}.#{GVB.minor_version+1}.0"
+        elsif version_increase == 'patch'
+          GVB.tag_version "#{GVB.major_version}.#{GVB.minor_version}.#{GVB.patch_version+1}"
+        end
+
+        info "version tag bumped to #{GVB.version}"
       end
 
       unless git_working_directory == :working_directory_not_set
         git_mgr = Services::SourceManagers::GitManager.new(git_working_directory)
         new_version = GVB.version
-        puts "getting commits between #{old_version} and #{new_version}"
+        info "getting commits between #{old_version} and #{new_version}"
         commits = git_mgr.get_commits(old_version, new_version)
         story_ids = git_mgr.get_story_ids(commits)
-        puts "story ids found for this release #{story_ids.length} stories"
+        info "story ids found for this release #{story_ids.length} stories"
       end
 
       jira_site_url = fetch(:jira_site_url)
@@ -55,7 +62,7 @@ namespace :deploy do
       output = ''
       issues.each{|i| output << i.title + "\n"  }
 
-      puts " #{issues.length} issues loaded from JIRA"
+      info " #{issues.length} issues loaded from JIRA"
 
       File.write('/Users/jaydanielian/code/dub/siq/temp_file.txt', output)
 
