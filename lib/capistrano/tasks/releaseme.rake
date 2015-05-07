@@ -20,7 +20,7 @@ namespace :load do
     set :publisher_api_token, :publisher_api_token_not_set
     set :publisher_chat_room, :publisher_chat_room_not_set
     set :publisher_system_name, :publisher_system_name_not_set
-    set :env_to_deploy, fetch(:rack_env, :environment_not_set)
+    set :env_to_deploy,  :environment_not_set
   end
 end
 
