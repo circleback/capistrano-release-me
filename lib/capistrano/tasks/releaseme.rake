@@ -51,12 +51,20 @@ namespace :deploy do
       unless git_working_directory == :working_directory_not_set
         git_mgr = Services::SourceManagers::GitManager.new(git_working_directory)
         new_version = "v#{GVB.major_version(true)}.#{GVB.minor_version(true)}.#{GVB.patch_version(true)}"
-        unless new_version == old_version
-          info "getting commits between #{old_version} and #{new_version}"
-          commits = git_mgr.get_commits(old_version, new_version)
-          story_ids = git_mgr.get_story_ids(commits)
-          info "story ids found for this release #{story_ids.length} stories"
+
+        begin
+          git_mgr.tag(old_version)
+          unless new_version == old_version
+            info "getting commits between #{old_version} and #{new_version}"
+            commits = git_mgr.get_commits(old_version, new_version)
+            story_ids = git_mgr.get_story_ids(commits)
+            info "story ids found for this release #{story_ids.length} stories"
+          end
+        rescue
+          info "old tag is not found"
         end
+
+
 
       end
 
