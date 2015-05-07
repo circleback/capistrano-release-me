@@ -16,6 +16,10 @@ namespace :load do
     default_version_increase ||= 'patch'
     set :version_increase, default_version_increase
 
+    set :publisher, :hip_chat
+    set :publisher_api_token, :publisher_api_token_not_set
+    set :publisher_chat_room, :publisher_chat_room_not_set
+
   end
 end
 
@@ -63,11 +67,14 @@ namespace :deploy do
 
       issues = tracker.get_issues(story_ids)
       output = ''
-      issues.each{|i| output << i.title + "\n"  }
+      issues.each{|i| output << "#{i.key} - #{i.title}\n"  }
 
-      info " #{issues.length} issues loaded from JIRA"
-
-      File.write('/Users/jaydanielian/code/dub/siq/temp_file.txt', output)
+      if issues.length > 0
+        info " #{issues.length} issues loaded from JIRA"
+        info "**** RELEASE NOTES FOR #{new_version}*****"
+        info output
+        info "****** END RELEASE NOTES *********"
+      end
 
 
     end
