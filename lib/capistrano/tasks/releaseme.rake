@@ -68,7 +68,7 @@ namespace :deploy do
 
       issues = tracker.get_issues(story_ids)
       output = ''
-      issues.each{|i| output << "#{i.key} - #{i.title}\n"  }
+      issues.each{|i| output << "#{i.id} - #{i.title}\n"  }
 
       if issues.length > 0
         info " #{issues.length} issues loaded from JIRA"
