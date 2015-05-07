@@ -36,6 +36,19 @@ module Services
 
       end
 
+      def tag_exists(tag_name)
+        exists = false
+        begin
+          @git.tag(tag_name)
+            exists = true
+        rescue Git::GitTagNameDoesNotExist => tag_error
+
+        end
+
+        exists
+
+      end
+
       def get_story_ids(commits, story_id_regex_pattern = '^\[?([A-Z]{2,8}-\d{1,11})')
 
         ids = []

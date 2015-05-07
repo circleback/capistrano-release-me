@@ -52,19 +52,14 @@ namespace :deploy do
         git_mgr = Services::SourceManagers::GitManager.new(git_working_directory)
         new_version = "v#{GVB.major_version(true)}.#{GVB.minor_version(true)}.#{GVB.patch_version(true)}"
 
-        begin
-          git_mgr.tag(old_version)
+        if git_mgr.tag_exists(old_version)
           unless new_version == old_version
             info "getting commits between #{old_version} and #{new_version}"
             commits = git_mgr.get_commits(old_version, new_version)
             story_ids = git_mgr.get_story_ids(commits)
             info "story ids found for this release #{story_ids.length} stories"
           end
-        rescue Git::GitTagNameDoesNotExist => tag_error
-          info "old tag '#{old_version}' is not found. Error => #{tag_error.inspect}"
         end
-
-
 
       end
 
