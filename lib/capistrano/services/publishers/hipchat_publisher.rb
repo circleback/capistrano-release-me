@@ -20,7 +20,7 @@ module Services
         output = ''
         issues.each{|i| output << "<a href=\"#{i.link}\">#{i.id}</a> - #{i.title}<br/>"  }
 
-        message = "#{system_name} version #{release_version} released to <b>#{env.to_s.upcase}</b><br/> #{output}"
+        message = "#{system_name} version #{release_version} released to #{env.to_s.upcase}<br/> #{output}"
 
         @client[room_name].send('cap deploy', message, :message_format => 'html')
 
