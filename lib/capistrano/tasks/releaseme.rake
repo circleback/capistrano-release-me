@@ -20,7 +20,7 @@ end
 
 namespace :deploy do
 
-  after :cleanup do
+  after :cleanup, :releaseme do
     run_locally do
 
       git_working_directory = fetch(:git_working_directory)
