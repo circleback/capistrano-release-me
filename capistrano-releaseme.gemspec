@@ -1,6 +1,6 @@
 
 Gem::Specification.new do |s|
-  s.name        = 'capistrano-release-me'
+  s.name        = 'capistrano-releaseme'
   s.license     = 'LICENSE.txt'
   s.version     = '0.0.1'
   s.date        = '2015-05-06'
