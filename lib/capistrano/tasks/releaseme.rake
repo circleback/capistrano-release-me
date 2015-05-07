@@ -60,8 +60,8 @@ namespace :deploy do
             story_ids = git_mgr.get_story_ids(commits)
             info "story ids found for this release #{story_ids.length} stories"
           end
-        rescue
-          info "old tag is not found"
+        rescue Git::GitTagNameDoesNotExist => tag_error
+          info "old tag '#{old_version}' is not found. Error => #{tag_error.inspect}"
         end
 
 
