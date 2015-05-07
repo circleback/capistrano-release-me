@@ -2,7 +2,7 @@ PATH
   remote: .
   specs:
     capistrano-releaseme (0.0.1)
-      capistrano (~> 3.2.1)
+      capistrano (~> 3.4.0)
       git (~> 1.2.9.1)
       git-version-bump (~> 0.14.0)
       jira-ruby (~> 0.1.14)
@@ -16,7 +16,7 @@ GEM
       minitest (~> 5.1)
       thread_safe (~> 0.3, >= 0.3.4)
       tzinfo (~> 1.1)
-    capistrano (3.2.1)
+    capistrano (3.4.0)
       i18n
       rake (>= 10.0.0)
       sshkit (~> 1.3)
