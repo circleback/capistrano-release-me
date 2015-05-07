@@ -55,7 +55,7 @@ namespace :deploy do
         if git_mgr.tag_exists(old_version)
           unless new_version == old_version
             info "getting commits between #{old_version} and #{new_version}"
-            commits = git_mgr.get_commits(old_version, new_version)
+            commits = git_mgr.get_commits(old_version, new_version) unless version_increase == 'none'
             story_ids = git_mgr.get_story_ids(commits)
             info "story ids found for this release #{story_ids.length} stories"
           end
