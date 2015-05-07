@@ -18,7 +18,7 @@ module Services
 
         message = "#{system_name} version #{release_version} released to #{env} \n #{release_notes}"
 
-        @client[room_name].send('Release Publisher', message, :message_format => 'text')
+        @client[room_name].send('cap deploy', message, :message_format => 'text')
 
 
       end
