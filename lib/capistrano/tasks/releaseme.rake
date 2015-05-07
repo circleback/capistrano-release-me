@@ -20,7 +20,7 @@ namespace :load do
     set :publisher_api_token, :publisher_api_token_not_set
     set :publisher_chat_room, :publisher_chat_room_not_set
     set :publisher_system_name, :publisher_system_name_not_set
-    set :env_to_deploy,  :environment_not_set
+    set :env_to_deploy, ENV['rack_env']
   end
 end
 
@@ -83,7 +83,8 @@ namespace :deploy do
 
         pub = Services::Publishers::HipChatPublisher.new(publisher_api_token)
         env_to_deploy = fetch(:env_to_deploy)
-        pub.publish_release(new_version, fetch(:publisher_system_name),env_to_deploy,output,fetch(:publisher_chat_room))
+
+        pub.publish_release(new_version, fetch(:publisher_system_name),env_to_deploy,fetch(:publisher_chat_room),issues)
 
       end
 

@@ -14,11 +14,16 @@ module Services
 
       end
 
-      def publish_release(release_version, system_name, env, release_notes, room_name)
+      def publish_release(release_version, system_name, env, room_name, issues = [])
 
-        message = "#{system_name} version #{release_version} released to #{env} \n #{release_notes}"
 
-        @client[room_name].send('cap deploy', message, :message_format => 'text')
+        output = ''
+        issues.each{|i| output << "<a href=\"#{i.link}\">#{i.id}</a> - #{i.title}<br/>"  }
+
+
+        message = "#{system_name} version #{release_version} released to #{env}<br/> #{output}"
+
+        @client[room_name].send('cap deploy', message, :message_format => 'html')
 
 
       end
