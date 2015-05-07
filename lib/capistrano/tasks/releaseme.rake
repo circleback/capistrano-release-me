@@ -1,5 +1,6 @@
 require 'capistrano/deploy'
 require 'git-version-bump'
+require 'git-version-bump/rake-tasks'
 
 namespace :load do
   task :defaults do
