@@ -21,7 +21,23 @@ namespace :load do
     set :publisher_chat_room, :publisher_chat_room_not_set
     set :publisher_system_name, :publisher_system_name_not_set
     set :env_to_deploy, ENV['rack_env']
+
+    set :aws_key, ENV['AWS_ACCESS_KEY_ID']
+    set :aws_secret, ENV['AWS_SECRET_ACCESS_KEY']
+    set :aws_elb_name, ''
+
   end
+end
+
+namespace :releaseme do
+  task :deregister_instance do |instance_id|
+    deregister_instance(instance_id)
+  end
+
+  task :register_instance do |instance_id|
+    register_instance(instance_id)
+  end
+
 end
 
 namespace :deploy do
@@ -96,4 +112,143 @@ namespace :deploy do
   end
 
 
+end
+
+def get_loadbalancer_name(env)
+  lb_name = fetch(:aws_elb_name)
+
+  lb_name
+
+end
+
+def get_aws_elb
+  aws_key = fetch(:aws_key, nil)
+  aws_secret = fetch(:aws_secret, nil)
+
+  if aws_key && aws_secret
+    elb = AWS::ELB.new(:aws_access_key_id => aws_key,
+                       :aws_secret_access_key => aws_secret)
+  else
+    :no_aws_configuration
+  end
+
+
+end
+
+def deregister_instance(instance_id)
+
+  elb = get_aws_elb
+  unless elb == :no_aws_configuration
+    lb_name = get_loadbalancer_name(fetch(:rack_env))
+    unless lb_name.empty?
+
+      puts "about to deregister instance #{instance_id} from load balancer #{lb_name}"
+
+      aws_response = elb.client.describe_load_balancers({:load_balancer_names => [lb_name]})
+
+      instances_list = aws_response[:load_balancer_descriptions][0][:instances]
+      dereg_response = elb.client.deregister_instances_from_load_balancer({:load_balancer_name => lb_name, :instances => [{:instance_id => instance_id}]})
+
+      max_tries = 15
+      is_completed = false
+      10.times do |i|
+        puts "requery attempt #{i}"
+        begin
+          aws_response = elb.client.describe_instance_health({:load_balancer_name => lb_name, :instances => [{:instance_id => instance_id}] })
+        rescue AWS::ELB::Errors::InvalidInstance => aws_err
+          puts "instance #{instance_id} not yet in load balancer, end deregister attempt"
+          break
+        end
+        sleep(3)
+        puts "aws_response from requery #{i} #{aws_response.inspect} "
+
+        if !aws_response[:instance_states].nil?
+          is_completed = aws_response[:instance_states].any?{|x| x[:state] == "OutOfService" && x[:instance_id] == instance_id }
+
+          break if is_completed || i >= max_tries
+
+        end
+
+      end
+
+      if is_completed
+        puts "instance #{instance_id} is removed from load balancer"
+      else
+        puts "ERROR*** removing instance #{instance_id}"
+      end
+
+      is_completed
+
+    end
+  end
+
+end
+
+def register_instance(instance_id)
+
+  elb = get_aws_elb
+  unless elb == :no_aws_configuration
+    lb_name = get_loadbalancer_name(fetch(:rack_env))
+
+    unless lb_name.empty?
+
+      puts "about to register instance #{instance_id} on load balancer #{lb_name}"
+
+      reg_response = elb.client.register_instances_with_load_balancer({:load_balancer_name => lb_name, :instances => [{:instance_id => instance_id}]})
+
+      puts "reg_response #{reg_response.inspect}"
+
+      max_tries = 15
+      is_registered = false
+
+      10.times do |i|
+        puts "requery attempt #{i}"
+        aws_response = elb.client.describe_instance_health({:load_balancer_name => lb_name, :instances => [{:instance_id => instance_id}] })
+        sleep(3)
+        puts "aws_response from requery #{i} #{aws_response.inspect} "
+
+        if !aws_response[:instance_states].nil?
+          is_registered = aws_response[:instance_states].any?{|x| x[:state] == "InService" && x[:instance_id] == instance_id }
+
+          break if is_registered || i >= max_tries
+
+        end
+      end
+
+
+      if is_registered
+        puts "instance #{instance_id} is added to load_balancer"
+      else
+        puts "ERROR*** PROBLEM ADDING instance #{instance_id} to load_balancer"
+      end
+
+      is_registered
+
+    end
+  end
+
+
+
+end
+
+def get_instances
+
+  elb = get_aws_elb
+  instances_list = []
+  unless elb == :no_aws_configuration
+    lb_name = get_loadbalancer_name(fetch(:rack_env))
+
+
+    puts "#{lb_name} is lb_name"
+
+    unless lb_name.empty?
+      aws_response = elb.client.describe_load_balancers({:load_balancer_names => [lb_name]})
+
+      instances_list = aws_response[:load_balancer_descriptions][0][:instances]
+    end
+  end
+
+
+
+  instances_list
 end
