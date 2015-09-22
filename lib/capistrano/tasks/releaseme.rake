@@ -1,6 +1,7 @@
 require 'capistrano/deploy'
 require 'git-version-bump'
 require 'git-version-bump/rake-tasks'
+require 'aws-sdk-v1'
 
 namespace :load do
   task :defaults do
