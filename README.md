@@ -54,7 +54,7 @@ set :aws_secret, 'mysecret'
 ```
 But if this is in anywhere public - I would not recommend that :)
 
-Once these configurations are set you can call this in your deploy.rb file to unregister the instance
+Once these configurations are set you can call this in your deploy.rb file to unregister/register the instance. These tasks can be invoked from wherever you want in your deployment flow.
 ```ruby
 # inside a task block in your deploy.rb for example like this
 namespace :deploy do
