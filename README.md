@@ -32,7 +32,7 @@ which will by default create a local git tag (v0.0.1 for example) and push the t
 
 To manage the tag version stamping into git you can do `bundle exec cap qa deploy version_increase=major|minor|patch|none`. The default is patch, which will increase the last patch number of the tag (v.0.0.2).  So if version_increase argument is ommitted, it will increase the patch level of the tag. You may also want to mod the production.rb file for your production cap deployment. I added `set :version_increase, 'none'` to make sure that when deploying to production, I dont increase the version number - since I am normally just deploying an existing QA-ed tag....um...right?????
 
-### issuing a rolling deployment with AWS ELB
+### Issuing a rolling deployment with AWS ELB
 If you have your servers in EC2, and they are  behind a Elastic Load Balancer, then releaseme has the ability to do a basic "rolling deployment". It provides tasks to deregister and register an instance out of the ELB.
 
 To configure rolling deployment you can set additional config in your environment specific files (deploy/production.rb)
@@ -73,7 +73,7 @@ namespace :deploy do
     on roles(:all), in: :sequence, wait: 5 do |host|
       props = host.properties
       current_instance_id = props.fetch(:instance_id) #this pulls from the instance_id: thing we added to the server def in the environment specific file earlier
-      puts "removing instance #{current_instance_id}"
+      puts "adding instance #{current_instance_id}"
       invoke 'releaseme:register_instance', current_instance_id
     end
   end
