@@ -30,11 +30,13 @@ namespace :load do
 end
 
 namespace :releaseme do
-  task :deregister_instance do |instance_id|
+  task :deregister_instance, :instance_id do |t, args|
+    instance_id = args[:instance_id]
     deregister_instance(instance_id)
   end
 
-  task :register_instance do |instance_id|
+  task :register_instance, :instance_id do |t, args|
+    instance_id = args[:instance_id]
     register_instance(instance_id)
   end
 
